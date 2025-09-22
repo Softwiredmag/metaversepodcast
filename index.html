@@ -1,0 +1,121 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SOFTWIRED — Podcast</title>
+  <style>
+    :root{
+      --bg: #ffffff;
+      --text: #111;
+      --accent: #39ff14; /* brighter neon green */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";}
+    /* Splash */
+    .splash{
+      position:fixed; inset:0;
+      background:var(--bg);
+      display:flex; flex-direction:column; justify-content:space-between; align-items:stretch;
+      padding:5vmin 4vmin; /* side padding so last letter doesn't clip */
+      z-index:10;
+      transition:opacity .8s ease;
+    }
+    .splash__word{
+      width:100%;
+      font-weight:800;
+      letter-spacing:.12em;
+      color:var(--accent);
+      font-size: clamp(36px, 15vw, 200px); /* a bit smaller so the D is visible */
+      line-height:1;
+      user-select:none;
+      text-align:left; /* align left to match your request */
+    }
+    .splash__mid{opacity:0} /* stays invisible like your screenshot */
+    /* main */
+    main{min-height:100%; display:grid; place-items:center; padding:10vmin 4vmin}
+    .card{ max-width:min(620px, 92vw); text-align:center; }
+    .art{
+      width:min(420px, 80vw);
+      height:auto;
+      border-radius:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+      display:block;
+      margin:0 auto 22px;
+    }
+    h1{ margin:0 0 6px; letter-spacing:.08em; font-weight:800; }
+    .subtitle{ margin:0 0 18px; color:#666; }
+    .toolbar{ display:flex; gap:10px; justify-content:center; margin-bottom:14px; }
+    .btn{
+      border:1px solid #e7e7e7; background:#fff; padding:10px 12px; border-radius:12px;
+      cursor:pointer; font-size:14px; display:inline-flex; align-items:center; gap:8px;
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .player{ background:#f6f7f9; border:1px solid #e7e7e7; border-radius:14px; padding:16px; }
+    audio{width:100%}
+    .fade-out{opacity:0}
+    @media (max-height:640px){ .splash{padding:3vmin} }
+  </style>
+</head>
+<body>
+  <!-- SPLASH: three "SOFTWIRED" rows (top/middle/bottom) -->
+  <div class="splash" id="splash" aria-label="Intro">
+    <div class="splash__word">SOFTWIRED</div>
+    <div class="splash__word splash__mid">SOFTWIRED</div>
+    <div class="splash__word">SOFTWIRED</div>
+  </div>
+
+  <main aria-live="polite">
+    <div class="card">
+      <img class="art" src="podcasr.png" alt="SOFTWIRED cover art" />
+      <div class="toolbar">
+        <button class="btn" id="downloadBtn" title="Download">⬇️ <span>Download</span></button>
+        <button class="btn" id="shareBtn" title="Share">🔗 <span>Share</span></button>
+      </div>
+      <h1>SOFTWIRED</h1>
+      <p class="subtitle">Dive into the fascinating world of the Metaverse!</p>
+      <div class="player">
+        <audio controls preload="metadata">
+          <source src="Beyond_the_Hype__Unpacking_the_Metaverse_s_Blended_Reality_and_.mp4" type="audio/mp4" />
+          <source src="Beyond_the_Hype__Unpacking_the_Metaverse_s_Blended_Reality_and_.mp4" type="video/mp4" />
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Hide splash after a brief intro or on interaction
+    const splash = document.getElementById('splash');
+    let dismissed = false;
+    const hideSplash = () => {
+      if(dismissed) return;
+      dismissed = true;
+      splash.classList.add('fade-out');
+      setTimeout(()=> splash.remove(), 900);
+    };
+    ['click','scroll','keydown','touchstart'].forEach(ev=>window.addEventListener(ev, hideSplash, {once:true, passive:true}));
+    setTimeout(hideSplash, 2200);
+
+    // Download button
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.href = 'Beyond_the_Hype__Unpacking_the_Metaverse_s_Blended_Reality_and_.mp4';
+      a.download = 'softwired_podcast.mp4';
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+    // Share button
+    const shareBtn = document.getElementById('shareBtn');
+    shareBtn.addEventListener('click', async () => {
+      const url = window.location.href;
+      if (navigator.share) {
+        try { await navigator.share({ title: 'SOFTWIRED — Podcast', url }); } catch(e){}
+      } else {
+        try { await navigator.clipboard.writeText(url); shareBtn.innerHTML = '✅ <span>Copied</span>'; setTimeout(()=> shareBtn.innerHTML='🔗 <span>Share</span>', 1500);} catch(e){}
+      }
+    });
+  </script>
+</body>
+</html>
